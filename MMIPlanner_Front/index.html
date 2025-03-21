@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr" ng-app="MMIPlanner">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/images/LogoMP.png">
+
+    <title>MMI'Planner</title>
+    
+    <!-- AngularJS CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    
+    <!-- Fichiers AngularJS -->
+    <script src="app/app.js"></script>
+    <script src="app/controllers/main.controller.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700&display=swap" rel="stylesheet">
+</head>
+<body ng-controller="MainController">
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo-container">
+                <img src="assets/images/LogoMP.png" alt="Logo MMIPlanner">
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="app/view/events.html">Événements</a>
+                <a href="app/view/clubs.html">Clubs</a>
+                <button onclick="alert('Connexion')">Se connecter</button>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Contenu Principal -->
+    <main>
+        <!-- Titre principal -->
+        <div class="title-container">
+            <h1 class="main-title">MMI'PLANNER</h1>
+        </div>
+
+        <!-- Section avec deux colonnes -->
+        <div class="main-content">
+            <!-- Colonne gauche -->
+            <div class="left-column">
+                <hr class="separatorh">
+                <p>MMI Planner est une plateforme conçue pour les étudiants de MMI à Vélizy, permettant de rejoindre des clubs passionnants comme le Cinéma, la Photographie, la VR, le Sport, et les Jeux Vidéo. </p>
+
+                <p>MMI Planner est une plateforme conçue pour les étudiants de MMI à Vélizy, permettant de rejoindre des clubs passionnants comme le Cinéma, la Photographie, la VR, le Sport, et les Jeux Vidéo. </p>
+            </div>
+
+            
+            
+            <!-- Colonne droite (image avec ombre au départ) -->
+        <!-- Colonne droite (image avec ombre au départ) -->
+            <div class="right-column">
+                <div class="parallax-image">
+                <img src="assets/images/clair.png" alt="Image Parallax" class="image-base">
+                <div class="image-overlay" ng-class="{'fade-out': isScrolled}"></div>
+             </div>
+
+            
+     
+    </main>
+
+    <!-- Ajoutez une div vide en bas pour permettre au contenu de s'étendre et activer le scroll -->
+    <div class="footer">
+        <p>MMI'PLANNER</p>
+    </div>
+</body>
+</html>
