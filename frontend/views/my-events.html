@@ -1,0 +1,53 @@
+<div ng-controller="MyEventsController" class="my-events-container">
+    <h2>Mes événements</h2>
+
+    <!-- Loading indicator -->
+    <div ng-if="loading" class="loading text-center my-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-2">Chargement des événements...</p>
+    </div>
+
+    <!-- Error message -->
+    <div ng-if="error" class="alert alert-danger">
+        <p>{{error}}</p>
+    </div>
+
+    <!-- No events message -->
+    <div ng-if="!loading && !error && !participatedEvents.length" class="no-events text-center my-4">
+        <p class="lead">Vous ne participez à aucun événement pour le moment.</p>
+        <a href="#/events" class="btn btn-primary">Voir tous les événements</a>
+    </div>
+
+    <!-- Events list -->
+    <div ng-if="!loading && !error && participatedEvents.length > 0" class="events-list">
+        <div ng-repeat="event in participatedEvents" class="event-card mb-3 p-3 border rounded">
+            <div class="event-header">
+                <h3 class="mb-3">{{event.titre}}</h3>
+            </div>
+            <div class="event-body">
+                <p class="event-description mb-2">{{event.description}}</p>
+                <p class="event-location mb-2"><strong>Lieu:</strong> {{event.lieu}}</p>
+                <div class="event-date mb-3">
+                    <i class="fas fa-calendar"></i> 
+                    {{ formatDate(event.date) }}
+                </div>
+            </div>
+            <div class="event-footer d-flex justify-content-between align-items-center">
+                <a href="#/events/{{event.id}}" class="btn btn-sm btn-outline-primary">Voir détails</a>
+                <button 
+                    ng-click="toggleParticipation(event)" 
+                    class="btn btn-sm btn-danger">
+                    Annuler la participation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug info -->
+    <div class="debug-info mt-4 text-muted small">
+        <p>Nombre d'événements: {{participatedEvents.length}}</p>
+    </div>
+    </div>
+</div>

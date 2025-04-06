@@ -1,0 +1,342 @@
+<div ng-controller="EventDetailController" class="event-detail-container">
+    <!-- Loading indicator -->
+    <div ng-if="loading" class="loading">
+        <p>Chargement de l'événement...</p>
+    </div>
+    
+    <!-- Error message -->
+    <div ng-if="error" class="error-message">
+        <p>{{error}}</p>
+    </div>
+    
+    <!-- Event not found message -->
+    <div ng-if="!loading && !error && !event" class="not-found">
+        <p>Événement non trouvé</p>
+        <a href="#/events" class="btn-back">Retour aux événements</a>
+    </div>
+    
+    <!-- Event details -->
+    <div ng-if="!loading && event" class="event-detail">
+        <div class="event-header">
+            <a href="#/events" class="btn-back">&larr; Retour aux événements</a>
+            <h2>{{event.titre}}</h2>
+            
+            <!-- Boutons de modification et suppression (uniquement pour admin ou organisateur) -->
+            <div class="event-actions" ng-if="canModifyEvent()" 
+                 ng-init="console.log('Checking modify permissions', event, AuthService.getCurrentUser())">
+                <button class="btn btn-edit" ng-click="prepareEditEvent()">
+                    <i class="fa fa-edit"></i> Modifier
+                </button>
+                <button class="btn btn-delete" ng-click="deleteEvent()">
+                    <i class="fa fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+        
+        <!-- Formulaire de modification d'événement -->
+        <div ng-if="isEditingEvent" class="event-edit-form">
+            <form ng-submit="saveEventChanges()">
+                <div class="form-group">
+                    <label for="editTitre">Titre</label>
+                    <input type="text" id="editTitre" ng-model="editingEvent.titre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <textarea id="editDescription" ng-model="editingEvent.description" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editLieu">Lieu</label>
+                    <input type="text" id="editLieu" ng-model="editingEvent.lieu" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventDate">Date et Heure</label>
+                    <input type="datetime-local" id="eventDate" name="date" 
+                           class="form-control" 
+                           ng-model="editingEvent.date" 
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editClub">Club (optionnel)</label>
+                    <select id="editClub" ng-model="editingEvent.club">
+                        <option value="">Aucun club</option>
+                        <!-- Vous devrez probablement charger la liste des clubs dynamiquement -->
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" class="btn btn-secondary" ng-click="cancelEditEvent()">Annuler</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="event-info">
+            <div class="event-main">
+                <div class="event-image" ng-if="event.image">
+                    <img ng-src="assets/images/{{event.image}}" alt="{{event.titre}}">
+                </div>
+                
+                <div class="event-description">
+                    <h3>Description</h3>
+                    <p>{{event.description}}</p>
+                </div>
+                
+                <div class="event-metadata">
+                    <p><strong>Lieu:</strong> {{event.lieu}}</p>
+                    <p><strong>Date:</strong> {{formatDate(event.date)}}</p>
+                    <p><strong>Créé le:</strong> {{formatDate(event.dateCreation)}}</p>
+                </div>
+            </div>
+            
+            <div class="event-organizer" ng-if="organizer">
+                <h3>Organisateur</h3>
+                <p>{{organizer.prenom}} {{organizer.nom}}</p>
+                <p ng-if="organizer.email">{{organizer.email}}</p>
+            </div>
+            
+            <div class="event-club" ng-if="club">
+                <h3>Club</h3>
+                <p>{{club.nom}}</p>
+                <p ng-if="club.description">{{club.description}}</p>
+            </div>
+        </div>
+        
+        <div class="event-details-section">
+            <div class="event-meta">
+                <p class="event-date">
+                    <i class="fas fa-calendar"></i> {{ formatDate(event.date) }}
+                </p>
+                <p class="event-location">
+                    <i class="fas fa-map-marker-alt"></i> {{ event.lieu }}
+                </p>
+            </div>
+
+            <!-- Bouton de participation -->
+            <div class="event-participation mt-3" ng-if="isAuthenticated()">
+                <button 
+                    ng-click="toggleParticipation(event)" 
+                    class="btn"
+                    ng-class="{'btn-success': !event.isParticipating, 'btn-danger': event.isParticipating}">
+                    {{ event.isParticipating ? 'Annuler la participation' : 'Participer' }}
+                </button>
+            </div>
+        </div>
+        
+        <!-- Comments section -->
+        <div class="comments-section">
+            <h3>Commentaires ({{comments.length}})</h3>
+            
+            <div ng-if="!comments.length" class="no-comments">
+                <p>Aucun commentaire pour cet événement.</p>
+            </div>
+            
+            <div ng-if="comments.length > 0" class="comments-list">
+                <div ng-repeat="comment in comments" class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">{{comment.auteur.prenom}} {{comment.auteur.nom}}</span>
+                        <span class="comment-date">{{formatDate(comment.dateCreation)}}</span>
+                    </div>
+                    <div class="comment-content">
+                        <p>{{comment.contenu}}</p>
+                    </div>
+                    <div class="comment-actions" ng-if="canDeleteComment(comment)">
+                        <button class="btn-delete" ng-click="deleteComment(comment)">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add comment form -->
+            <div class="add-comment" ng-if="isAuthenticated()">
+                <h4>Ajouter un commentaire</h4>
+                <form ng-submit="addComment()">
+                    <div class="form-group">
+                        <textarea ng-model="newComment.contenu" rows="3" placeholder="Votre commentaire..." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" ng-disabled="!newComment.contenu.trim() || isAddingComment">
+                            <i class="fa" ng-class="{'fa-paper-plane': !isAddingComment, 'fa-spinner fa-spin': isAddingComment}"></i>
+                            {{isAddingComment ? 'Publication en cours...' : 'Publier'}}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div ng-if="!isAuthenticated()" class="login-prompt">
+                <p><a href="#/login">Connectez-vous</a> pour laisser un commentaire.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .event-detail-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .loading, .error-message, .not-found {
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .error-message {
+        color: red;
+        border: 1px solid red;
+        background-color: #ffeeee;
+        border-radius: 4px;
+    }
+    
+    .btn-back {
+        display: inline-block;
+        padding: 8px 15px;
+        background-color: #f1f1f1;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+    
+    .btn-back:hover {
+        background-color: #e0e0e0;
+    }
+    
+    .event-header {
+        margin-bottom: 20px;
+    }
+    
+    .event-header h2 {
+        margin-top: 10px;
+        color: #333;
+    }
+    
+    .event-info {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .event-image {
+        margin-bottom: 20px;
+    }
+    
+    .event-image img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .event-description, .event-metadata {
+        margin-bottom: 20px;
+    }
+    
+    .event-organizer, .event-club {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .comments-section {
+        margin-top: 30px;
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+    }
+    
+    .comments-list {
+        margin-bottom: 30px;
+    }
+    
+    .comment {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .comment-author {
+        font-weight: bold;
+    }
+    
+    .comment-date {
+        color: #777;
+        font-size: 0.9em;
+    }
+    
+    .add-comment textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+    }
+    
+    .btn-submit {
+        display: inline-block;
+        padding: 8px 20px;
+        background-color: #4D0000;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    
+    .btn-submit:hover {
+        background-color: #3367d6;
+    }
+    
+    .btn-delete {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8em;
+        margin-top: 5px;
+    }
+    
+    .btn-delete:hover {
+        background-color: #d32f2f;
+    }
+    
+    .comment-actions {
+        text-align: right;
+        padding-top: 5px;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 10px;
+    }
+    
+    .login-prompt {
+        text-align: center;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+    }
+    
+    @media (max-width: 768px) {
+        .event-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

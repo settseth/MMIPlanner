@@ -1,0 +1,321 @@
+
+<body ng-controller="ClubController">
+
+<div class="club-header">
+    <div class="club-header-text">
+        <h1 class="club-header-title">EXPLOREZ</h1>
+        <h1 class="club-header-title">LES DIFFERENTS</h1>
+        <h1 class="club-header-title">CLUBS MMI</h1>
+    </div>
+    <div class="club-header-image">
+        <img src="../../assets/images/club_image.png" alt="Image Clubs">
+    </div>
+</div>
+
+<svg class="club-wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+    <path fill="#ffbfb1" fill-opacity="1" d="M0,160L60,176C120,192,240,224,360,229.3C480,235,600,213,720,208C840,203,960,213,1080,218.7C1200,224,1320,224,1380,224L1440,224V320H0Z"></path>
+</svg>
+
+<main class="club-main-container">
+    <div class="club-image-container">
+        <img src="../../assets/images/club_static.png" alt="Image des clubs">
+    </div>
+
+    <div class="club-content-container">
+        <h2 class="club-title-main">Les différents clubs</h2>
+
+        <div class="club-card" ng-repeat="club in clubs" ng-class="{ 'fade-in': true }">
+            <!-- Titre du club (cliquable) -->
+            <h1 class="club-title" ng-click="toggleBio(club)">{{ club.nom }}</h1>
+
+            <div class="club-info">
+                <!-- Description du club -->
+                <p class="club-description">{{ club.description }}</p>
+
+                <!-- Bouton View Bio / Hide Bio aligné à côté de la description -->
+                <span class="toggle-bio" ng-click="toggleBio(club)">
+                    {{ club.expanded ? 'Hide Bio' : 'View Bio' }}
+                </span>
+            </div>
+
+            <!-- Bio qui s'affiche en mode déroulant -->
+            <div class="club-bio" ng-show="club.expanded">
+                <p class="club-bio-text" ng-bind-html="club.bio"></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="club-footer">
+    <div class="footer-content">
+        <div class="footer-left">
+            <p>Fait par Kawthar MEKOUAR & Adnelly CARRE</p>
+        </div>
+        <div class="footer-center">
+            <img src="../../assets/images/LogoMP.png" alt="Logo MMIPlanner" class="footer-logo">
+            <p>MMIPlanner</p>
+        </div>
+        <div class="footer-right">
+            <a href="https://www.instagram.com/iut_velizy_rambouillet/" target="_blank">
+                <img src="../../assets/images/Instagram_icon.png" alt="Instagram" class="footer-instagram">
+            </a>
+        </div>
+    </div>
+</footer>
+
+
+
+
+
+<style>
+
+h1 {
+    font-size: 50px; /* Augmente la taille des H1 */
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFE6E3;
+     display: flex;               
+    flex-direction: column;    
+    min-height: 100vh;    
+}
+
+.club-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 90px 200px;
+    background-color: #FFE6E3; /* Couleur de fond légère */
+}
+
+.club-header-text {
+    flex: 1;
+    text-align: left;
+    font-family: 'Rubik', sans-serif;
+    font-size: 60px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: #fe2727;
+    line-height: 0.3; /* Réduit l'espace entre les lignes */
+}
+
+.club-header-image img {
+    width: 400px; /* Taille de l'image carrée */
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px; /* Coins arrondis */
+}
+
+
+
+hr.separator {
+    border: 1px solid #fe2727;
+    margin-bottom: 20px;
+}
+
+.scroll-helper {
+    height: 200px; 
+    background-color: transparent;
+}
+
+
+
+
+.club-main-container {
+    display: flex;
+    height: auto;
+    flex-direction: row;
+}
+
+.club-image-container {
+    width: 33.33%;  
+    height: auto;
+    background: #ffe5e0;
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.club-image-container img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+.club-content-container {
+    flex: 2; 
+    overflow-y: auto;
+    height: 100vh;
+    padding: 20px;
+}
+
+.club-title-main {
+    font-family: "Filson Pro", sans-serif;
+    font-size: 12px;
+    letter-spacing: .14rem;
+    line-height: 100%;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #4D0000;
+    margin-bottom: 20px; 
+}
+
+.club-card {
+    padding: 20px;
+    margin-bottom: 70px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    border-bottom: 1px solid #fe2727; 
+
+    
+}
+
+.club-card.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.club-title {
+    font-size: 70px;
+    text-transform: uppercase;
+    font-weight: 1000;
+    letter-spacing: 5px;
+    color: #fe2727;
+    margin-bottom: 2px;
+    font-family: 'poppins', sans-serif; 
+    cursor: pointer; 
+
+}
+
+.club-title:hover {
+    color: #ff0000; 
+}
+
+
+.separator {
+    width: 100%;
+    height: 2px;
+    background-color: #4D0000;
+    margin: 20px 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.club-info {
+    display: flex;
+    align-items: center; 
+    gap: 25px;  
+}
+
+.club-description {
+    font-family: "Filson Pro", sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.14rem;
+    line-height: 100%;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #4D0000;
+    font-weight: 400;
+}
+
+.toggle-bio {
+    font-family: "Filson Pro", sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.14rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #4D0000;
+    font-weight: 700; 
+    line-height: 100%;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+
+.toggle-bio:hover {
+    color: #8B0000;
+}
+
+.club-bio-text {
+    max-width: none;
+    padding-right: 20px;
+    font-size: 1rem;
+    line-height: 150%;
+    font-family: "Filson Pro", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color:#4D0000 ;
+    margin-top: 25px;
+}
+
+.club-footer {
+    background-color: #4D0000;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    font-family: "Filson Pro", sans-serif;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+}
+
+.footer-left, .footer-center, .footer-right {
+    flex: 1;
+    text-align: center;
+}
+
+.footer-left p, .footer-center p {
+    margin: 5px 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.footer-logo {
+    width: 50px;
+    height: auto;
+    margin-top: 5px;
+}
+
+.footer-instagram {
+    width: 25px;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+}
+
+.footer-instagram:hover {
+    transform: scale(1.2);
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+</style>

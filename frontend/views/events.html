@@ -1,0 +1,387 @@
+<div ng-controller="EventController" class="events-container">
+    <style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFE6E3;
+     display: flex;               
+    flex-direction: column;    
+    min-height: 100vh;    
+}
+
+        
+        .events-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .events-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .event-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .event-header {
+            background-color: #4D0000;
+            color: white;
+            padding: 15px;
+        }
+        .event-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .event-body {
+            padding: 15px;
+        }
+        .event-description {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .event-location, .event-date, .event-organizer, .event-club {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .event-footer {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #ddd;
+            text-align: right;
+        }
+        .event-details-link {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #4D0000;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .event-details-link:hover {
+            background-color: #4D0000;
+        }
+        .loading, .error-message, .no-events {
+            text-align: center;
+            padding: 20px;
+        }
+        .error-message {
+            color: #dc3545;
+        }
+        
+        /* Styles pour l'en-tête de la page */
+        .events-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        /* Styles pour le formulaire d'ajout d'événement */
+        .event-form-container {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .event-form h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #4D0000;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
+            color: #842029;
+        }
+        
+        .alert-success {
+            background-color: #d1e7dd;
+            border: 1px solid #badbcc;
+            color: #0f5132;
+        }
+    </style>
+    <div class="events-header d-flex justify-content-between align-items-center mb-4">
+        <h2>Événements</h2>
+        <div class="events-actions">
+            <!-- Bouton Mes Événements -->
+            <a href="#/my-events" class="btn btn-outline-primary me-2" ng-if="isAuthenticated()">
+                <i class="fas fa-calendar-check"></i> Mes événements
+            </a>
+            
+           
+            
+            <!-- Bouton Créer un événement -->
+            <button 
+                class="btn btn-primary" 
+                ng-click="toggleEventForm()"
+                ng-if="isAuthenticated()"
+                id="create-event-btn">
+                <i class="fas fa-plus"></i> Créer un événement
+            </button>
+        </div>
+    </div>
+    
+    <!-- Formulaire d'ajout d'événement -->
+    <div class="event-form-container" 
+         ng-if="showEventForm && isAuthenticated()" 
+         id="event-form-container">
+        <form ng-submit="createEvent(); console.log('Form submitted!');" 
+              class="event-form"
+              id="create-event-form">
+            <h3>Créer un nouvel événement</h3>
+            
+            <!-- Message d'erreur -->
+            <div ng-if="formError" class="alert alert-danger" onclick="console.log('Form error:', this.textContent)">
+                {{formError}}
+            </div>
+            
+            <div class="form-group">
+                <label for="eventTitle">Titre *</label>
+                <input type="text" 
+                       id="eventTitle" 
+                       class="form-control" 
+                       ng-model="newEvent.titre" 
+                       required
+                       onchange="console.log('Titre changed:', this.value)">
+            </div>
+            
+            <div class="form-group">
+                <label for="eventDescription">Description *</label>
+                <textarea id="eventDescription" class="form-control" ng-model="newEvent.description" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="eventDate">Date et heure *</label>
+                <input type="datetime-local" id="eventDate" class="form-control" 
+                       ng-model="newEvent.eventDate" 
+                       ng-value="formatDateForInput(newEvent.eventDate)"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="eventLocation">Lieu *</label>
+                <input type="text" id="eventLocation" class="form-control" ng-model="newEvent.lieu" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="eventClub">Club (optionnel)</label>
+                <select id="eventClub" class="form-control" ng-model="newEvent.club">
+                    <option value="">-- Sélectionner un club --</option>
+                    <option ng-repeat="club in clubs track by $index" 
+                            value="{{club.id}}"
+                            ng-bind="club.nom || club.name || 'Club sans nom'">
+                    </option>
+                </select>
+                <!-- Debug info -->
+                <div ng-if="clubs && clubs.length" class="text-muted small">
+                    <strong>{{clubs.length}} clubs disponibles:</strong>
+                    <span ng-repeat="club in clubs">
+                        {{club.nom || club.name || 'Club sans nom'}}{{!$last ? ', ' : ''}}
+                    </span>
+                </div>
+                <div ng-if="!clubs || clubs.length === 0" class="text-danger small">
+                    Aucun club disponible
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" 
+                        class="btn btn-success"
+                        onclick="console.log('Submit button clicked!')">
+                    Créer l'événement
+                </button>
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        ng-click="toggleEventForm()"
+                        onclick="console.log('Cancel button clicked!')">
+                    Annuler
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bouton de création d'événement pour les utilisateurs connectés -->
+    <div class="text-center my-3" ng-if="!isAuthenticated()">
+        <p>Connectez-vous pour créer un événement</p>
+        <a href="#/login" class="btn btn-primary">Se connecter</a>
+    </div>
+    
+    <!-- Loading indicator -->
+    <div ng-if="loading" class="loading">
+        <p>Chargement des événements...</p>
+    </div>
+    
+    <!-- Error message -->
+    <div ng-if="error" class="error-message">
+        <p>{{error}}</p>
+    </div>
+    
+    <!-- No events message -->
+    <div ng-if="!loading && !error && !events.length" class="no-events">
+        <p>Aucun événement disponible</p>
+    </div>
+    
+    <!-- Events list -->
+    <div ng-if="!loading && events.length > 0" class="events-list">
+        <div ng-repeat="event in events" class="event-card">
+            <div class="event-header">
+                <h3>{{event.titre}}</h3>
+            </div>
+            <div class="event-body">
+                <p class="event-description">{{event.description}}</p>
+                <p class="event-location"><strong>Lieu:</strong> {{event.lieu}}</p>
+                <div class="event-date">
+                    <i class="fas fa-calendar">Date:</i> 
+                    {{ formatDate(event.date) }}
+                </div>
+                
+                <!-- Informations sur l'organisateur -->
+                <p class="event-organizer" ng-if="event.organizerDetails">
+                    <strong>Organisateur:</strong> {{event.organizerDetails.prenom}} {{event.organizerDetails.nom}}
+                </p>
+                
+                <!-- Informations sur le club -->
+                <p class="event-club" ng-if="event.clubDetails">
+                    <strong>Club:</strong> {{event.clubDetails.nom}}
+                </p>
+            </div>
+            <div class="event-footer">
+                <a href="#/events/{{event.id}}" class="event-details-link">Voir détails</a>
+                <div class="event-participation" ng-if="isAuthenticated()">
+                    <button 
+                        ng-click="toggleParticipation(event)" 
+                        class="btn btn-sm"
+                        ng-class="{'btn-success': !event.isParticipating, 'btn-danger': event.isParticipating}">
+                        {{ event.isParticipating ? 'Annuler la participation' : 'Participer' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debug info -->
+    <div class="debug-info" style="margin-top: 20px; font-size: 12px; color: #999;">
+        <p>Nombre d'événements chargés: {{events.length}}</p>
+    </div>
+</div>
+
+<style>
+    .events-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .loading, .error-message, .no-events {
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .error-message {
+        color: red;
+        border: 1px solid red;
+        background-color: #ffeeee;
+        border-radius: 4px;
+    }
+    
+    .events-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .event-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .event-header {
+        padding: 15px;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .event-header h3 {
+        margin: 0;
+        color: #333;
+    }
+    
+    .event-body {
+        padding: 15px;
+    }
+    
+    .event-description {
+        margin-bottom: 15px;
+    }
+    
+    .event-footer {
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-top: 1px solid #ddd;
+        text-align: right;
+    }
+    
+    .event-details-link {
+        display: inline-block;
+        padding: 8px 15px;
+        background-color: #4D0000;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    
+    .event-details-link:hover {
+        background-color: #4D0000;
+    }
+
+    .btn-primary{
+        background-color: #4D0000
+    }
+</style>

@@ -1,0 +1,241 @@
+<main>
+    <main ng-controller="HomeController">
+
+    <div class="title-container">
+        <h1 class="main-title">MMI'PLANNER</h1>
+    </div>
+
+    <div class="main-content">
+        <div class="left-column">
+            <hr class="separatorh">
+            
+            <p class="description-text">
+                MMI Planner est une plateforme conçue pour les étudiants de MMI à Vélizy, permettant de rejoindre des clubs passionnants comme le Cinéma, la VR, le Sport, et les Jeux Vidéo.
+            </p>
+        
+            <a href="#/clubs">
+                <button class="club-button">Voir les Clubs</button>
+            </a>        
+            <p class="description-text">
+                Découvrez les événements de chaque club et inscrivez-vous ! Chaque club propose des événements en lien avec son domaine d'activité. Il y en a pour tous les goûts et toutes les passions. N'hésitez pas à les rejoindre et à participer aux événements qui vous intéressent!
+            </p>
+
+            <a href="#/events">
+                <button class="club-button">Voir les Événements</button>
+            </a>
+
+            <p class="description-text">
+                Restez connecté(e) aux actualités et aux nouveautés de votre formation. Grâce à MMI'Planner, ne manquez aucun événement important et découvrez de nouvelles opportunités pour enrichir votre parcours étudiant. Faites partie d’une communauté dynamique où créativité, innovation et partage sont au cœur de l’expérience MMI à Vélizy!
+            </p>
+        </div>
+        
+        <div class="right-column">
+            <div class="parallax-image">
+                <img src="assets/images/clair.png" alt="Image Parallax" class="image-base">
+                <div class="image-overlay" ng-class="{'fade-out': isScrolled}"></div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="club-footer">
+    <div class="footer-content">
+        <div class="footer-left">
+            <p>Fait par Kawthar MEKOUAR & Adnelly CARRE</p>
+        </div>
+        <div class="footer-center">
+            <img src="../../assets/images/LogoMP.png" alt="Logo MMIPlanner" class="footer-logo">
+            <p>MMIPlanner</p>
+        </div>
+        <div class="footer-right">
+            <a href="https://www.instagram.com/iut_velizy_rambouillet/" target="_blank">
+                <img src="../../assets/images/Instagram_icon.png" alt="Instagram" class="footer-instagram">
+            </a>
+        </div>
+    </div>
+</footer>
+
+
+<style>
+
+a {
+    text-decoration: none; 
+    color: inherit; 
+}
+
+a:visited {
+    color: inherit; 
+}
+
+a:hover {
+    text-decoration: none; 
+}
+
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFE6E3;
+     display: flex;               
+    flex-direction: column;    
+    min-height: 100vh;    
+}
+    main {
+        flex-grow: 1; 
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 0, 0, 0.5); 
+        transition: opacity 1.5s ease-out; 
+    }
+
+    .fade-out {
+        opacity: 0;
+    }
+
+    .title-container {
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    .main-title {
+        font-size: 160px;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 10px;
+        color: #fe2727;
+    }
+
+    .main-content {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 50px;
+        padding: 0 50px;
+    }
+
+    .left-column {
+        flex: 0.5;
+        padding-right: 40px;
+    }
+
+    .separatorh {
+        border: 1px solid #fe2727;
+        margin-bottom: 20px;
+    }
+
+    .right-column {
+        flex: 1;
+        position: relative;
+        min-height: 100vh; 
+        overflow: hidden;
+    }
+
+    .parallax-image {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-base {
+        width: 100%;
+        height: auto; 
+        max-height: none; 
+        object-fit: contain; 
+    }
+
+    .right-column img {
+        width: 100%; 
+        height: auto; 
+        object-fit: cover; 
+    }
+
+    .description-text {
+        font-size: 22px;
+        font-weight: 300;
+        line-height: 120%;
+        letter-spacing: -0.03rem;
+        color: #c74848;
+        margin-top: 50px;
+        font-family: 'Canela Text', sans-serif;  
+    }
+
+    .club-button {
+    cursor: pointer;
+    border-radius: 50px;
+    background-color: #770000;
+    color: white;
+    letter-spacing: 0.02rem;
+    font-size: 1rem; 
+    font-weight: 700;
+    border: none;
+    padding: 12px 30px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: fit-content; 
+    margin: 40px 0 250px 0; 
+}
+
+.club-footer {
+    background-color: #4D0000;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    font-family: "Filson Pro", sans-serif;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+}
+
+.footer-left, .footer-center, .footer-right {
+    flex: 1;
+    text-align: center;
+}
+
+.footer-left p, .footer-center p {
+    margin: 5px 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.footer-logo {
+    width: 50px;
+    height: auto;
+    margin-top: 5px;
+}
+
+.footer-instagram {
+    width: 25px;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+}
+
+.footer-instagram:hover {
+    transform: scale(1.2);
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+</style>
+

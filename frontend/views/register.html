@@ -1,0 +1,129 @@
+<div ng-controller="AuthController" class="register-container">
+    <h2>Inscription</h2>
+    <form ng-submit="register()">
+        <div>
+            <label>Prénom:</label>
+            <input type="text" ng-model="userData.prenom" required>
+        </div>
+        <div>
+            <label>Nom:</label>
+            <input type="text" ng-model="userData.nom" required>
+        </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" ng-model="userData.email" required>
+        </div>
+        <div>
+            <label>Mot de passe:</label>
+            <input type="password" ng-model="userData.motdepasse" required>
+        </div>
+        <div ng-if="error" style="color: red;">{{error}}</div>
+        <button type="submit">S'inscrire</button>
+        <p>Déjà un compte ? <a href="#/login">Se connecter</a></p>
+    </form>
+</div>
+
+<style>
+
+    body, html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background-color: #FFE6E3;
+    }
+    
+
+    
+    .register-container {
+        max-width: 700px;  
+        margin: 50px auto;
+        padding: 40px;  
+        background-color: #FFD1C9; 
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(77, 0, 0, 0.2);
+        text-align: center;
+        position: relative; 
+        z-index: 2;
+        padding-bottom: 60px; 
+    }
+    
+    .register-container h2 {
+        margin-bottom: 20px;
+        color: #4D0000; /* Texte foncé */
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .register-container form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .register-container label {
+        font-weight: 600;
+        text-align: left;
+        display: block;
+        margin-bottom: 5px;
+        color: #4D0000;
+    }
+    
+    .register-container input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #4D0000;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: white;
+        color: #4D0000;
+    }
+    
+    .register-container input:focus {
+        border-color: #fe2727;
+        outline: none;
+        box-shadow: 0 0 5px rgba(254, 39, 39, 0.5);
+    }
+    
+    .register-container button {
+        background-color: #fe2727; /* Bouton rouge */
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s;
+    }
+    
+    .register-container button:hover {
+        background-color: #FFBFB1; /* Effet hover */
+        color: #4D0000;
+        transform: scale(1.05);
+    }
+    
+    .register-container .error-message {
+        color: #fe2727;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .register-container p {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #4D0000;
+    }
+    
+    .register-container a {
+        color: #fe2727;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .register-container a:hover {
+        text-decoration: underline;
+        color: #FFBFB1;
+    }
+    </style>

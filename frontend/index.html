@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr" ng-app="MMIPlanner">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/images/Logo_mp.png">
+
+    <title>MMI'Planner</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@800&display=swap');
+
+       .navbar {
+        
+            background-color: #FFE6E3 !important; /* Couleur douce */
+            border-bottom: 2px solid #FFD1C9;
+            height: 75px;
+            padding: 0 20px;
+        }
+
+        /* Marque du site (EventSpace) */
+        .navbar-brand {
+            
+            font-size: 14px;
+            font-weight: bold;
+            color: #4D0000 !important;
+            text-transform: uppercase;
+        }
+
+        .container img {
+    height: 80px;
+    width: auto; 
+    max-width: 100%; 
+}
+
+
+        /* Bouton hamburger (mobile) */
+        .navbar-toggler {
+            border: none;
+        }
+
+        .navbar-toggler-icon {
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        /* Liens du menu */
+        .navbar-nav .nav-link {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4D0000 !important;
+            text-transform: uppercase;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #770000 !important;
+        }
+
+        /* Indiquer l'élément actif */
+        .navbar-nav .nav-link.active {
+            color: #fe2727 !important;
+        }
+
+        /* Espacement des éléments */
+        .navbar-nav .nav-item {
+            margin: 0 10px;
+        }
+
+        /* Message utilisateur (Bonjour, ...) */
+        .nav-user-info {
+            display: flex;
+            align-items: center;
+            color: #4D0000;
+            font-weight: bold;
+        }
+
+        /* Bouton déconnexion */
+        .navbar-nav .nav-link[ng-click="logout()"] {
+            background-color: #4D0000;
+            color: white !important;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .navbar-nav .nav-link[ng-click="logout()"]:hover {
+            background-color: #770000;
+        }
+        .container-fluid {
+    --bs-gutter-x: 0 !important;
+        }
+
+    
+
+    </style>
+    
+    <!-- Angular JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    
+    <!-- App -->
+    <script src="app/app.js"></script>
+    <!-- Services -->
+    <script src="app/services/authService.js"></script>
+    <script src="app/services/userService.js"></script>
+    <script src="app/services/eventService.js"></script>
+    <script src="app/services/clubService.js"></script>
+    <script src="app/services/commentService.js"></script>
+    <!-- Controllers -->
+    <script src="app/controllers/authController.js"></script>
+    <script src="app/controllers/eventController.js"></script>
+    <script src="app/controllers/eventDetailController.js"></script>
+    <script src="app/controllers/navController.js"></script>
+    <script src="app/controllers/myEventsController.js"></script>
+    <script src="app/controllers/AdminController.js"></script>
+    <script src="app/controllers/homeController.js"></script>
+    <script src="app/controllers/clubController.js"></script>
+
+
+</head>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" ng-controller="NavController">
+        <div class="container">
+
+            <img src="assets/images/LogoMP.png" alt="Logo MMIPlanner">
+            <a class="navbar-brand" href="#/">Accueil</a>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" ng-class="{active: isActive('/clubs')}" href="#/clubs">Clubs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" ng-class="{active: isActive('/events')}" href="#/events">Événements</a>
+                    </li>
+                </ul>
+                
+                <!-- Menu pour utilisateurs non connectés -->
+                <ul class="navbar-nav" ng-if="!isAuthenticated()">
+                    <li class="nav-item">
+                        <a class="nav-link" ng-class="{active: isActive('/login')}" href="#/login">Se connecter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" ng-class="{active: isActive('/register')}" href="#/register">S'inscrire</a>
+                    </li>
+                </ul>
+                
+                <!-- Menu pour utilisateurs connectés -->
+                <ul class="navbar-nav" ng-if="isAuthenticated()">
+                    <li class="nav-item">
+                        <a class="nav-link" ng-class="{active: isActive('/my-events')}" href="#/my-events">Mes événements</a>
+                    </li>
+                    
+                    <!-- Lien Admin (visible uniquement pour les administrateurs) -->
+                    <li class="nav-item" ng-if="getCurrentUser().roles && (getCurrentUser().roles.includes('ROLE_ADMIN') || getCurrentUser().roles.includes('ROLE_SUPER_ADMIN'))">
+                        <a class="nav-link" ng-class="{active: isActive('/admin')}" href="#/admin">
+                            <i class="fas fa-cogs"></i> Administration
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item nav-user-info">
+                        <span class="nav-greeting text-light">Bonjour, {{getCurrentUser().prenom || getCurrentUser().email}}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" ng-click="logout()">Se déconnecter</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Contenu principal -->
+    <div class="container-fluid mt-3">
+        
+        <div ng-view></div>
+    </div>
+
+
+
+    
+
+   
+
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
